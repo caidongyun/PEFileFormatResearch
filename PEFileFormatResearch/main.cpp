@@ -1,6 +1,7 @@
 #include <iostream>
 #include <Windows.h>
 #include <sstream>
+#include <conio.h>
 
 bool DumpPEFileInfo( const char* filename );
 void ShowStructImageDosHeader( FILE* pFile , const _IMAGE_DOS_HEADER& header );
@@ -11,16 +12,29 @@ void ShowStructImageSectionHeader( FILE* pFile , const IMAGE_SECTION_HEADER& hea
 
 int main( int argc,char *argv[] )
 {
-	if( 1 == argc )
-	{
-		std::cout<<"无参数!"<<std::endl;
-		return 0;
+	WIN32_FIND_DATAA win32FindData;
+	memset( &win32FindData , 0 , sizeof(win32FindData ) );
+	HANDLE hFind = FindFirstFileA("*.*", &win32FindData );
+
+	if( INVALID_HANDLE_VALUE  != hFind   )
+	{ 
+			do
+			{
+				if( win32FindData.dwFileAttributes & FILE_ATTRIBUTE_ARCHIVE )
+				{
+					if( true == DumpPEFileInfo( win32FindData.cFileName ) )
+					{
+						std::cout<<"成功导出\""<<win32FindData.cFileName<<"\"的PE信息..."<<std::endl;
+					}
+				}  
+			}while( TRUE == FindNextFileA( hFind , &win32FindData ) );
+
+			FindClose( hFind );
+			hFind = NULL; 
 	}
 
-	const char* fileName = argv[1];  
-	DumpPEFileInfo( fileName );
-	DumpPEFileInfo( "niparticle31vc90s.dll" );
-
+	std::cout<<"按任意键退出..."<<std::endl;
+	_getch();
 	return 0;
 }
 
@@ -38,14 +52,15 @@ bool DumpPEFileInfo( const char* filename )
 	errno_t err = fopen_s( &pPEFile , filename , "rb" ); 
 	if( 0 != err )
 	{
-		std::cout<<"文件\""<<filename<<"\"不存在!"<<std::endl;
+		//std::cout<<"文件\""<<filename<<"\"不存在!"<<std::endl;
 		return false;
 	} 
 	 
 	size_t bytesRead = fread_s( &imageDosHeader , sizeof(imageDosHeader) , 1 , sizeof(imageDosHeader) , pPEFile );
-	if( bytesRead != sizeof(imageDosHeader) )
+	if( bytesRead != sizeof(imageDosHeader) ||
+		imageDosHeader.e_magic  != 0x5A4D )
 	{
-		std::cout<<"文件中的 IMAGE_DOS_HEADER 结构破损!"<<std::endl;
+		//std::cout<<"文件 \""<<filename<<"\" 中的 IMAGE_DOS_HEADER 结构破损!"<<std::endl;
 		fclose( pPEFile );
 		pPEFile = NULL;
 		return 0;
@@ -55,7 +70,7 @@ bool DumpPEFileInfo( const char* filename )
 	int iRes = fseek( pPEFile , imageDosHeader.e_lfanew , SEEK_SET ); 
 	if( 0 != iRes )
 	{
-		std::cout<<"文件破损!无法定位到 IMAGE_NT_HEADERS32 结构体!"<<std::endl;
+		//std::cout<<"文件破损!无法定位到 IMAGE_NT_HEADERS32 结构体!"<<std::endl;
 		fclose( pPEFile );
 		pPEFile = NULL;
 		return false;
@@ -63,27 +78,15 @@ bool DumpPEFileInfo( const char* filename )
 	
 	bytesRead = 
 		fread_s( &imageNTHeader , sizeof(imageNTHeader) , 1 , sizeof(imageNTHeader) , pPEFile );
-
-
-	bool bIsDebugVer = true; 
-	if( imageNTHeader.FileHeader.Characteristics & IMAGE_FILE_DEBUG_STRIPPED )
-	{
-		bIsDebugVer = false;
-	}
-
-	std::ostringstream strBumpFileName;  
-	if( bIsDebugVer )
-	{
-		strBumpFileName<<filename<<"_"<<"Debug"<<"_"<<imageNTHeader.FileHeader.TimeDateStamp<<".txt";
-	}else{
-		strBumpFileName<<filename<<"_"<<"Release"<<"_"<<imageNTHeader.FileHeader.TimeDateStamp<<".txt";
-	}
+	 
+	std::ostringstream strBumpFileName;   
+	strBumpFileName<<filename<<"_"<<"PE_Info_Dump"<<".txt";  
 
 	FILE* pDumpFile = NULL;
 	err = fopen_s( &pDumpFile , strBumpFileName.str().c_str() , "wt" );
 	if( 0 != err )
 	{
-		std::cout<<"文件\""<<strBumpFileName.str().c_str()<<"\"无法打开!"<<std::endl;
+		//std::cout<<"文件\""<<strBumpFileName.str().c_str()<<"\"无法打开!"<<std::endl;
 		fclose( pPEFile );
 		pPEFile = NULL;
 		return false;
