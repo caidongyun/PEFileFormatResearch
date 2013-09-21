@@ -9,6 +9,9 @@ void ShowStructImageNTHeader( FILE* pFile , const IMAGE_NT_HEADERS32& header );
 void ShowStructImageFileHeader( FILE* pFile ,  const IMAGE_FILE_HEADER& header );
 void ShowStructImageOptionalHeader( FILE* pFile , const IMAGE_OPTIONAL_HEADER& header );
 void ShowStructImageSectionHeader( FILE* pFile , const IMAGE_SECTION_HEADER& header) ;
+std::string AnalysisFileHeaderMachineFlag( const unsigned int flag );
+std::string AnalysisFileHeaderCharacteristics( const unsigned int flag );
+std::string AnalysisSectionHeaderCharacteristics( const unsigned int flag );
 
 int main( int argc,char *argv[] )
 {
@@ -121,28 +124,28 @@ void ShowStructImageDosHeader(  FILE* pFile , const _IMAGE_DOS_HEADER& header )
 { 
 	 
 	fprintf_s( pFile , "\n\n[Image_Dos_Header]\n");
-	fprintf_s( pFile , "[魔数] e_magic = 0x%.4x\n" , (unsigned int)header.e_magic  );
-	fprintf_s( pFile , "[文件最后页的字节数] e_cblp = %d\n" ,  (unsigned int)header.e_cblp  );
-	fprintf_s( pFile , "[文件页数] e_cp = %d\n" , (unsigned int)header.e_cp);
-	fprintf_s( pFile , "[重定义元素个数] e_crlc = %d\n" , (unsigned int)header.e_crlc  );
-	fprintf_s( pFile , "[头部尺寸，以段落为单位] e_cparhdr = %d\n" , (unsigned int)header.e_cparhdr  );
-	fprintf_s( pFile , "[所需最小附加段] e_minalloc = %d\n" , (unsigned int)header.e_minalloc  );
-	fprintf_s( pFile , "[所需最大附加段] e_maxalloc = %d\n" , (unsigned int)header.e_maxalloc  );
-	fprintf_s( pFile , "[初始的SS值(相对偏移量)] e_ss =  0x%.4x\n" , (unsigned int)header.e_ss  );
-	fprintf_s( pFile , "[初始的SP值] e_sp =  0x%.4x\n" , (unsigned int)header.e_sp  );
-	fprintf_s( pFile , "[校验和] e_csum =  0x%.4x\n" , (unsigned int)header.e_csum  );
-	fprintf_s( pFile , "[初始的IP值] e_ip = 0x%.4x\n" , (unsigned int)header.e_ip  );
-	fprintf_s( pFile , "[初始的CS值(相对偏移量)] e_cs = 0x%.4x\n" , (unsigned int)header.e_cs  );
-	fprintf_s( pFile , "[重分配表文件地址] e_lfarlc = 0x%.4x\n" , (unsigned int)header.e_lfarlc  );
-	fprintf_s( pFile , "[覆盖号] e_ovno = 0x%.4x\n" , (unsigned int)header.e_ovno  );
-	fprintf_s( pFile , "[重分配表文件地址] e_lfarlc = %d\n" , (unsigned int)header.e_lfarlc  );
-	fprintf_s( pFile , "[新exe头部的文件地址] e_lfanew = %d\n" , (unsigned int)header.e_lfanew  );
+	fprintf_s( pFile , "e_magic = 0x%.4x\n" , (unsigned int)header.e_magic  );
+	fprintf_s( pFile , "e_cblp = %d\n" ,  (unsigned int)header.e_cblp  );
+	fprintf_s( pFile , "e_cp = %d\n" , (unsigned int)header.e_cp);
+	fprintf_s( pFile , "e_crlc = %d\n" , (unsigned int)header.e_crlc  );
+	fprintf_s( pFile , "e_cparhdr = %d\n" , (unsigned int)header.e_cparhdr  );
+	fprintf_s( pFile , "e_minalloc = %d\n" , (unsigned int)header.e_minalloc  );
+	fprintf_s( pFile , "e_maxalloc = %d\n" , (unsigned int)header.e_maxalloc  );
+	fprintf_s( pFile , "e_ss =  0x%.4x\n" , (unsigned int)header.e_ss  );
+	fprintf_s( pFile , "e_sp =  0x%.4x\n" , (unsigned int)header.e_sp  );
+	fprintf_s( pFile , "e_csum =  0x%.4x\n" , (unsigned int)header.e_csum  );
+	fprintf_s( pFile , "e_ip = 0x%.4x\n" , (unsigned int)header.e_ip  );
+	fprintf_s( pFile , "e_cs = 0x%.4x\n" , (unsigned int)header.e_cs  );
+	fprintf_s( pFile , "e_lfarlc = 0x%.4x\n" , (unsigned int)header.e_lfarlc  );
+	fprintf_s( pFile , "e_ovno = 0x%.4x\n" , (unsigned int)header.e_ovno  );
+	fprintf_s( pFile , "e_lfarlc = %d\n" , (unsigned int)header.e_lfarlc  );
+	fprintf_s( pFile , "e_lfanew = %d\n" , (unsigned int)header.e_lfanew  );
 };
 
 void ShowStructImageNTHeader(  FILE* pFile , const IMAGE_NT_HEADERS& header  )
 {
 	fprintf_s( pFile , "\n\n[Image_NT_Header]\n");
-	fprintf_s( pFile , "[PE文件头标志] Signature = 0x%.8x\n" , (unsigned int)header.Signature  );
+	fprintf_s( pFile , "Signature = 0x%.8x\n" , (unsigned int)header.Signature  );
 	ShowStructImageFileHeader( pFile , header.FileHeader );
 	ShowStructImageOptionalHeader( pFile , header.OptionalHeader );
 }
@@ -150,13 +153,13 @@ void ShowStructImageNTHeader(  FILE* pFile , const IMAGE_NT_HEADERS& header  )
 void ShowStructImageFileHeader(  FILE* pFile , const IMAGE_FILE_HEADER& header )
 {
 	fprintf_s( pFile , "\n\n[Image_File_Header]\n");
-	fprintf_s( pFile , "[执行平台] Machine = 0x%.4x\n" , (unsigned int)header.Machine  );
-	fprintf_s( pFile , "[段数目] NumberOfSections = %d\n" , (unsigned int)header.NumberOfSections  );
-	fprintf_s( pFile , "[文件建立时间] TimeDateStamp = %d\n" , (unsigned int)header.TimeDateStamp  );
+	fprintf_s( pFile , "Machine = %s\n" , AnalysisFileHeaderMachineFlag( header.Machine ).c_str() );
+	fprintf_s( pFile , "NumberOfSections = %d\n" , (unsigned int)header.NumberOfSections  );
+	fprintf_s( pFile , "TimeDateStamp = %d\n" , (unsigned int)header.TimeDateStamp  );
 	fprintf_s( pFile , "PointerToSymbolTable = %d\n" , (unsigned int)header.PointerToSymbolTable  );
 	fprintf_s( pFile , "NumberOfSymbols = %d\n" , (unsigned int)header.NumberOfSymbols  );
 	fprintf_s( pFile , "SizeOfOptionalHeader = %d\n" , (unsigned int)header.SizeOfOptionalHeader  );
-	fprintf_s( pFile , "Characteristics =  0x%.4x\n" , (unsigned int)header.Characteristics  );
+	fprintf_s( pFile , "Characteristics =  %s\n" , AnalysisFileHeaderCharacteristics( header.Characteristics ).c_str() );
 }
 
 void ShowStructImageOptionalHeader(  FILE* pFile , const IMAGE_OPTIONAL_HEADER& header )
@@ -211,7 +214,499 @@ void ShowStructImageSectionHeader(  FILE* pFile , const IMAGE_SECTION_HEADER& he
 	fprintf_s( pFile , "PointerToRelocations = %d\n" , header.PointerToRelocations    );
 	fprintf_s( pFile , "NumberOfRelocations = %d\n" , header.NumberOfRelocations  );
 	fprintf_s( pFile , "NumberOfLinenumbers = %d\n" , header.NumberOfLinenumbers );
-	fprintf_s( pFile , "Characteristics = 0x%.8x\n" , header.Characteristics  );
+	fprintf_s( pFile , "Characteristics = %s\n" , AnalysisSectionHeaderCharacteristics( header.Characteristics ).c_str() );
+}
+
+std::string AnalysisFileHeaderMachineFlag( const unsigned int flag )
+{
+	if( IMAGE_FILE_MACHINE_I386 == flag )
+	{
+		return "I386";
+	}else if( IMAGE_FILE_MACHINE_IA64 == flag ){
+		return "IA64";
+	}else if( IMAGE_FILE_MACHINE_AMD64 == flag ){
+		return "AMD64";
+	}
+	return "UNKNOWN";
+}
+
+std::string AnalysisFileHeaderCharacteristics( const unsigned int flag )
+{
+	std::string strFinalFlags;
+	if( flag & IMAGE_FILE_RELOCS_STRIPPED )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_FILE_RELOCS_STRIPPED";
+	}
+
+	if( flag & IMAGE_FILE_EXECUTABLE_IMAGE )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_FILE_EXECUTABLE_IMAGE";
+	}
+
+	if( flag & IMAGE_FILE_LINE_NUMS_STRIPPED )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_FILE_LINE_NUMS_STRIPPED";
+	}
+
+	if( flag & IMAGE_FILE_LOCAL_SYMS_STRIPPED )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_FILE_LOCAL_SYMS_STRIPPED";
+	}
+
+	if( flag & IMAGE_FILE_AGGRESIVE_WS_TRIM )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_FILE_AGGRESIVE_WS_TRIM";
+	}
+
+	if( flag & IMAGE_FILE_LARGE_ADDRESS_AWARE )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_FILE_LARGE_ADDRESS_AWARE";
+	}
+
+	if( flag & IMAGE_FILE_BYTES_REVERSED_LO )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_FILE_BYTES_REVERSED_LO";
+	}
+
+	if( flag & IMAGE_FILE_32BIT_MACHINE )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_FILE_32BIT_MACHINE";
+	}
+
+	if( flag & IMAGE_FILE_DEBUG_STRIPPED )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_FILE_DEBUG_STRIPPED";
+	}
+
+	if( flag & IMAGE_FILE_REMOVABLE_RUN_FROM_SWAP )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_FILE_REMOVABLE_RUN_FROM_SWAP";
+	}
+
+	if( flag & IMAGE_FILE_NET_RUN_FROM_SWAP )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_FILE_NET_RUN_FROM_SWAP";
+	}
+
+	if( flag & IMAGE_FILE_SYSTEM )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_FILE_SYSTEM";
+	}
+
+	if( flag & IMAGE_FILE_DLL )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_FILE_DLL";
+	}
+
+	if( flag & IMAGE_FILE_UP_SYSTEM_ONLY )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_FILE_UP_SYSTEM_ONLY";
+	}
+
+	if( flag & IMAGE_FILE_BYTES_REVERSED_HI )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_FILE_BYTES_REVERSED_HI";
+	}
+
+	if( strFinalFlags.empty() )
+	{
+		return "0";
+	}
+
+	return strFinalFlags;
+}
+
+std::string AnalysisSectionHeaderCharacteristics( const unsigned int flag )
+{
+	std::string strFinalFlags;
+
+	if( flag & IMAGE_SCN_TYPE_NO_PAD )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_SCN_TYPE_NO_PAD";
+	}
+
+	if( flag & IMAGE_SCN_CNT_CODE )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_SCN_CNT_CODE";
+	}
+
+	if( flag & IMAGE_SCN_CNT_INITIALIZED_DATA )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_SCN_CNT_INITIALIZED_DATA";
+	}
+
+	if( flag & IMAGE_SCN_CNT_UNINITIALIZED_DATA )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_SCN_CNT_UNINITIALIZED_DATA";
+	}
+
+	if( flag & IMAGE_SCN_LNK_OTHER )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_SCN_LNK_OTHER";
+	}
+
+	if( flag & IMAGE_SCN_LNK_INFO )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_SCN_LNK_INFO";
+	}
+
+	if( flag & IMAGE_SCN_LNK_REMOVE )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_SCN_LNK_REMOVE";
+	}
+
+	if( flag & IMAGE_SCN_LNK_COMDAT )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_SCN_LNK_COMDAT";
+	}
+
+	if( flag & IMAGE_SCN_NO_DEFER_SPEC_EXC )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_SCN_NO_DEFER_SPEC_EXC";
+	}
+
+	if( flag & IMAGE_SCN_GPREL )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_SCN_GPREL";
+	}
+
+	if( flag & IMAGE_SCN_MEM_PURGEABLE )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_SCN_MEM_PURGEABLE";
+	}
+
+	if( flag & IMAGE_SCN_MEM_LOCKED )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_SCN_MEM_LOCKED";
+	}
+
+	if( flag & IMAGE_SCN_MEM_PRELOAD )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_SCN_MEM_PRELOAD";
+	}
+
+	if( flag & IMAGE_SCN_ALIGN_1BYTES )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_SCN_ALIGN_1BYTES";
+	}
+
+	if( flag & IMAGE_SCN_ALIGN_2BYTES )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_SCN_ALIGN_2BYTES";
+	}
+
+	if( flag & IMAGE_SCN_ALIGN_4BYTES )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_SCN_ALIGN_4BYTES";
+	}
+
+	if( flag & IMAGE_SCN_ALIGN_8BYTES )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_SCN_ALIGN_8BYTES";
+	}
+
+	if( flag & IMAGE_SCN_ALIGN_16BYTES )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_SCN_ALIGN_16BYTES";
+	}
+
+	if( flag & IMAGE_SCN_ALIGN_32BYTES )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_SCN_ALIGN_32BYTES";
+	}
+
+	if( flag & IMAGE_SCN_ALIGN_64BYTES )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_SCN_ALIGN_64BYTES";
+	}
+
+	if( flag & IMAGE_SCN_ALIGN_128BYTES )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_SCN_ALIGN_128BYTES";
+	}
+
+	if( flag & IMAGE_SCN_ALIGN_256BYTES )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_SCN_ALIGN_256BYTES";
+	}
+
+	if( flag & IMAGE_SCN_ALIGN_512BYTES )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_SCN_ALIGN_512BYTES";
+	}
+
+	if( flag & IMAGE_SCN_ALIGN_1024BYTES )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_SCN_ALIGN_1024BYTES";
+	}
+
+
+	if( flag & IMAGE_SCN_ALIGN_2048BYTES )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_SCN_ALIGN_2048BYTES";
+	}
+
+
+	if( flag & IMAGE_SCN_ALIGN_4096BYTES )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_SCN_ALIGN_4096BYTES";
+	}
+
+
+	if( flag & IMAGE_SCN_ALIGN_8192BYTES )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_SCN_ALIGN_8192BYTES";
+	}
+
+
+	if( flag & IMAGE_SCN_LNK_NRELOC_OVFL )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_SCN_LNK_NRELOC_OVFL";
+	}
+
+
+	if( flag & IMAGE_SCN_MEM_DISCARDABLE )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_SCN_MEM_DISCARDABLE";
+	}
+
+
+	if( flag & IMAGE_SCN_MEM_NOT_CACHED )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_SCN_MEM_NOT_CACHED";
+	}
+
+	if( flag & IMAGE_SCN_MEM_NOT_PAGED )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_SCN_MEM_NOT_PAGED";
+	}
+
+	if( flag & IMAGE_SCN_MEM_SHARED )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_SCN_MEM_SHARED";
+	}
+
+	if( flag & IMAGE_SCN_MEM_EXECUTE )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_SCN_MEM_EXECUTE";
+	}
+
+	if( flag & IMAGE_SCN_MEM_READ )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_SCN_MEM_READ";
+	}
+
+	if( flag & IMAGE_SCN_MEM_WRITE )
+	{
+		if( !strFinalFlags.empty()  )
+		{
+			strFinalFlags += "|";
+		}
+		strFinalFlags += "IMAGE_SCN_MEM_WRITE";
+	}
+
+	if( strFinalFlags.empty() )
+	{
+		return "0";
+	}
+
+	return strFinalFlags;
 }
 
 

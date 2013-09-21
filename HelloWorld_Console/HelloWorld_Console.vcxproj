@@ -77,6 +77,7 @@
       </SectionAlignment>
       <EntryPointSymbol>main</EntryPointSymbol>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <MergeSections>/merge:.rdata=.text;/merge:.data=.text</MergeSections>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
