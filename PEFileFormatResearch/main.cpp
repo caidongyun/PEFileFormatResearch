@@ -12,6 +12,8 @@ void ShowStructImageSectionHeader( FILE* pFile , const IMAGE_SECTION_HEADER& hea
 std::string AnalysisFileHeaderMachineFlag( const unsigned int flag );
 std::string AnalysisFileHeaderCharacteristics( const unsigned int flag );
 std::string AnalysisSectionHeaderCharacteristics( const unsigned int flag );
+std::string AnalysisImageOptionalHeaderSubSystem( const unsigned int subSys );
+std::string AnalysisImageOptionalHeaderDllCharacteristics( const unsigned int flag );
 
 int main( int argc,char *argv[] )
 {
@@ -187,8 +189,8 @@ void ShowStructImageOptionalHeader(  FILE* pFile , const IMAGE_OPTIONAL_HEADER& 
 	fprintf_s( pFile , "SizeOfImage = %d\n" ,  (unsigned int)header.SizeOfImage  );
 	fprintf_s( pFile , "SizeOfHeaders = %d\n" ,  (unsigned int)header.SizeOfHeaders  );
 	fprintf_s( pFile , "CheckSum = %d\n" ,  (unsigned int)header.CheckSum  );
-	fprintf_s( pFile , "Subsystem = %d\n" ,  (unsigned int)header.Subsystem  );
-	fprintf_s( pFile , "DllCharacteristics = %d\n" ,  (unsigned int)header.DllCharacteristics  );
+	fprintf_s( pFile , "Subsystem = %s\n" ,  AnalysisImageOptionalHeaderSubSystem( (unsigned int)header.Subsystem ).c_str() );
+	fprintf_s( pFile , "DllCharacteristics = %s\n" ,  AnalysisImageOptionalHeaderDllCharacteristics( (unsigned int)header.DllCharacteristics ).c_str() );
 	fprintf_s( pFile , "SizeOfStackReserve = %d\n" ,  (unsigned int)header.SizeOfStackReserve  );
 	fprintf_s( pFile , "SizeOfStackCommit = %d\n" ,  (unsigned int)header.SizeOfStackCommit  );
 	fprintf_s( pFile , "SizeOfHeapReserve = %d\n" ,  (unsigned int)header.SizeOfHeapReserve  );
@@ -707,6 +709,144 @@ std::string AnalysisSectionHeaderCharacteristics( const unsigned int flag )
 	}
 
 	return strFinalFlags;
+}
+
+std::string AnalysisImageOptionalHeaderSubSystem( const unsigned int subSys )
+{
+	std::string strSubSys = "UNKNOWN";
+
+	switch( subSys )
+	{
+	case IMAGE_SUBSYSTEM_UNKNOWN:
+		break;
+	case IMAGE_SUBSYSTEM_NATIVE:
+		strSubSys = "Native";
+		break;
+	case IMAGE_SUBSYSTEM_WINDOWS_GUI:
+		strSubSys = "WinGUI";
+		break;
+	case IMAGE_SUBSYSTEM_WINDOWS_CUI:
+		strSubSys = "WinCUI";
+		break;
+	case IMAGE_SUBSYSTEM_OS2_CUI:
+		strSubSys = "OS2CUI";
+		break;
+	case IMAGE_SUBSYSTEM_POSIX_CUI:
+		strSubSys = "POSIX CUI";
+		break;
+	case IMAGE_SUBSYSTEM_NATIVE_WINDOWS:
+		strSubSys = "Native Windows";
+		break;
+	case IMAGE_SUBSYSTEM_WINDOWS_CE_GUI:
+		strSubSys = "WinCE GUI";
+		break;
+	case IMAGE_SUBSYSTEM_EFI_APPLICATION:
+		strSubSys = "EFI APP";
+		break;
+	case IMAGE_SUBSYSTEM_EFI_BOOT_SERVICE_DRIVER:
+		strSubSys = "EFI Boot Service Driver";
+		break;
+	case IMAGE_SUBSYSTEM_EFI_RUNTIME_DRIVER:
+		strSubSys = "EFI Runtime Driver";
+		break;
+	case IMAGE_SUBSYSTEM_EFI_ROM:
+		strSubSys = "EFI Rom";
+		break;
+	case IMAGE_SUBSYSTEM_XBOX:
+		strSubSys = "XBox";
+		break;
+	case IMAGE_SUBSYSTEM_WINDOWS_BOOT_APPLICATION:
+		strSubSys = "Win Boot App";
+		break;
+	default:
+		break;
+	}
+
+	return strSubSys;
+}
+
+std::string AnalysisImageOptionalHeaderDllCharacteristics( const unsigned int flag )
+{
+	std::string strDllFlag;
+	
+	if( flag & IMAGE_DLLCHARACTERISTICS_DYNAMIC_BASE )
+	{
+		if( !strDllFlag.empty()  )
+		{
+			strDllFlag += "|";
+		}
+		strDllFlag += "IMAGE_DLLCHARACTERISTICS_DYNAMIC_BASE";
+	}
+
+	if( flag & IMAGE_DLLCHARACTERISTICS_FORCE_INTEGRITY )
+	{
+		if( !strDllFlag.empty()  )
+		{
+			strDllFlag += "|";
+		}
+		strDllFlag += "IMAGE_DLLCHARACTERISTICS_FORCE_INTEGRITY";
+	}
+
+	if( flag & IMAGE_DLLCHARACTERISTICS_NX_COMPAT )
+	{
+		if( !strDllFlag.empty()  )
+		{
+			strDllFlag += "|";
+		}
+		strDllFlag += "IMAGE_DLLCHARACTERISTICS_NX_COMPAT";
+	}
+
+	if( flag & IMAGE_DLLCHARACTERISTICS_NO_ISOLATION )
+	{
+		if( !strDllFlag.empty()  )
+		{
+			strDllFlag += "|";
+		}
+		strDllFlag += "IMAGE_DLLCHARACTERISTICS_NO_ISOLATION";
+	}
+
+	if( flag & IMAGE_DLLCHARACTERISTICS_NO_SEH )
+	{
+		if( !strDllFlag.empty()  )
+		{
+			strDllFlag += "|";
+		}
+		strDllFlag += "IMAGE_DLLCHARACTERISTICS_NO_SEH";
+	}
+
+	if( flag & IMAGE_DLLCHARACTERISTICS_NO_BIND )
+	{
+		if( !strDllFlag.empty()  )
+		{
+			strDllFlag += "|";
+		}
+		strDllFlag += "IMAGE_DLLCHARACTERISTICS_NO_BIND";
+	}
+
+	if( flag & IMAGE_DLLCHARACTERISTICS_WDM_DRIVER )
+	{
+		if( !strDllFlag.empty()  )
+		{
+			strDllFlag += "|";
+		}
+		strDllFlag += "IMAGE_DLLCHARACTERISTICS_WDM_DRIVER";
+	}
+
+	if( flag & IMAGE_DLLCHARACTERISTICS_TERMINAL_SERVER_AWARE )
+	{
+		if( !strDllFlag.empty()  )
+		{
+			strDllFlag += "|";
+		}
+		strDllFlag += "IMAGE_DLLCHARACTERISTICS_TERMINAL_SERVER_AWARE";
+	}
+
+	if( strDllFlag.empty() )
+	{
+		strDllFlag = "0";
+	}
+
+	return strDllFlag;
 }
 
 
